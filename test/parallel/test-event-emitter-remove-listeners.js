@@ -83,3 +83,19 @@ e5.once('removeListener', common.mustCall(function(name, cb) {
 }));
 e5.removeListener('hello', listener1);
 assert.deepEqual([], e5.listeners('hello'));
+
+var e6 = new events.EventEmitter();
+e6.on('hello', listener1);
+e6.once('hello', listener2);
+e6.once('removeListener', common.mustCall(function(name, cb) {
+  assert.equal(name, 'hello');
+  assert.equal(cb, listener2);
+  assert.deepEqual([listener1], e6.listeners('hello'));
+  e6.once('removeListener', common.mustCall(function(name, cb) {
+    assert.equal(name, 'hello');
+    assert.equal(cb, listener1);
+    assert.deepEqual([], e6.listeners('hello'));
+  }));
+  e6.removeListener('hello', listener1);
+}));
+e6.emit('hello');
